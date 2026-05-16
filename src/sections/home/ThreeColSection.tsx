@@ -19,7 +19,7 @@ function ColSection({ title, slug, articles, accentColor = "#e8435a" }: { title:
       {/* Column header */}
       <div className="flex items-center justify-between mb-3">
         <Link href={`/category/${slug}`}>
-          <h3 className="text-[16px] font-extrabold uppercase leading-tight" style={{ color: accentColor }}>
+          <h3 className="text-[15px] md:text-[16px] font-extrabold uppercase leading-tight" style={{ color: accentColor }}>
             {title.split(" ").map((word, i) => (
               <span key={i} className="block leading-[1.1]">
                 {word}
@@ -39,7 +39,7 @@ function ColSection({ title, slug, articles, accentColor = "#e8435a" }: { title:
       {/* Main article with image */}
       {main && (
         <Link href={`/article/${main.slug}`} className="group block mb-3">
-          <div className="relative overflow-hidden rounded-sm mb-2" style={{ height: 180 }}>
+          <div className="relative overflow-hidden rounded-sm mb-2" style={{ height: 160 }}>
             <Image src={main.thumbnail} alt={main.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
             <div className="absolute top-1 left-1">
               <span className="vov-badge">VOV</span>
@@ -77,10 +77,11 @@ export default function ThreeColSection({ sections }: ThreeColSectionProps) {
 
   return (
     <section className="mt-8">
-      <div className="rounded-sm overflow-hidden p-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-        <div className="grid grid-cols-3 gap-6 divide-x" style={{ "--tw-divide-opacity": "0.1" } as React.CSSProperties}>
+      <div className="rounded-sm overflow-hidden p-3 md:p-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+        {/* Mobile: vertical stack; Desktop: 3-col grid */}
+        <div className="flex flex-col md:grid md:grid-cols-3 gap-6 md:divide-x" style={{ "--tw-divide-opacity": "0.1" } as React.CSSProperties}>
           {sections.map((section, i) => (
-            <div key={section.slug} className={i > 0 ? "pl-6" : ""}>
+            <div key={section.slug} className={`${i > 0 ? "md:pl-6" : ""} ${i > 0 ? "pt-5 md:pt-0 border-t md:border-t-0" : ""}`} style={{ borderColor: "rgba(255,255,255,0.08)" }}>
               <ColSection {...section} accentColor={colors[i]} />
             </div>
           ))}
