@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Navbar from "@/components/layout/Navbar";
@@ -24,6 +25,7 @@ export default function RootLayout({
   return (
     <html lang="vi" className={`${beVietnamPro.variable} h-full`}>
       <body className="min-h-full flex flex-col bg-[var(--color-bg)] text-[var(--color-text)]">
+        <Analytics />
         <Header />
         <Navbar />
         <main className="flex-1">{children}</main>
