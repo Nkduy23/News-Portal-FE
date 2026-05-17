@@ -27,6 +27,13 @@ export const navItems = [
   { label: "VOV.VN", slug: "vovvn" },
 ];
 
+// Shared mock HTML content (2–3 paragraphs, realistic)
+const mockContent = `
+<p>Trong không khí tưng bừng của mùa xuân mới, những câu chuyện về con người, về đất nước và về những ký ức đẹp lại trở về rõ nét hơn bao giờ hết. Đây là thời điểm để mỗi người nhìn lại hành trình đã qua, trân trọng những gì mình đang có và hướng tới tương lai với niềm tin và hy vọng.</p>
+<p>Theo các chuyên gia văn hóa, mùa Tết không chỉ là dịp nghỉ ngơi mà còn là cơ hội để gắn kết cộng đồng, khơi dậy tình yêu quê hương đất nước. Những hoạt động văn hóa truyền thống được tổ chức rộng rãi đã thu hút hàng nghìn người dân và du khách tham gia, tạo nên bức tranh xuân sôi động và đầy màu sắc.</p>
+<p>Với tinh thần "Việt Nam tự cường – Bứt phá vươn xa", xuân Bình Ngọ 2026 hứa hẹn sẽ là một năm bản lề đầy ý nghĩa, mở ra nhiều cơ hội phát triển cho đất nước và mỗi người dân Việt Nam trên toàn thế giới.</p>
+`;
+
 // =========== FEATURED / HERO ===========
 export const heroArticles: Article[] = [
   {
@@ -36,7 +43,10 @@ export const heroArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/hero1/500/300",
     category: "Đất nước vào Xuân",
     categorySlug: "dat-nuoc-vao-xuan",
-    publishedAt: "2026-01-25",
+    articleType: "Quốc phòng",
+    publishedAt: "2026-01-25T08:00:00",
+    tags: ["quốc phòng", "tết 2026", "bộ đội"],
+    content: mockContent,
   },
   {
     id: "h2",
@@ -47,7 +57,10 @@ export const heroArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/hero2/860/500",
     category: "Đất nước vào Xuân",
     categorySlug: "dat-nuoc-vao-xuan",
-    publishedAt: "2026-01-25",
+    articleType: "Quốc tế",
+    publishedAt: "2026-01-25T09:30:00",
+    tags: ["mũ nồi xanh", "liên hợp quốc", "tết xa nhà"],
+    content: mockContent,
   },
   {
     id: "h3",
@@ -56,7 +69,10 @@ export const heroArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/hero3/500/300",
     category: "Khát vọng Việt",
     categorySlug: "khat-vong-viet",
-    publishedAt: "2026-01-24",
+    articleType: "Chính trị",
+    publishedAt: "2026-01-24T10:00:00",
+    tags: ["khát vọng", "phát triển", "đất nước"],
+    content: mockContent,
   },
   {
     id: "h4",
@@ -65,7 +81,10 @@ export const heroArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/hero4/500/300",
     category: "Tết muôn nơi",
     categorySlug: "tet-muon-noi",
-    publishedAt: "2026-01-24",
+    articleType: "Xã hội",
+    publishedAt: "2026-01-24T11:00:00",
+    tags: ["nhà ở", "xã hội", "hy vọng"],
+    content: mockContent,
   },
   {
     id: "h5",
@@ -74,12 +93,153 @@ export const heroArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/hero5/500/300",
     category: "Tết Around Town",
     categorySlug: "tet-around-town",
-    publishedAt: "2026-01-23",
+    articleType: "Du lịch",
+    publishedAt: "2026-01-23T14:00:00",
+    tags: ["hạ long", "du lịch", "check-in"],
+    content: mockContent,
+  },
+];
+
+// =========== KÝ ỨC LÀM BÁO ===========
+export const kyUcLamBaoArticles: Article[] = [
+  {
+    id: "kulb1",
+    slug: "giai-bao-chi-dien-hong-lan-thu-4-vov-xuat-sac-gianh-2-giai-thuong",
+    title: "Giải báo chí Diên Hồng lần thứ 4: VOV xuất sắc giành 2 giải thưởng",
+    excerpt:
+      "VOVVN - Lễ trao Giải Báo chí toàn quốc về Quốc hội và Hội đồng nhân dân (Giải Diên Hồng) lần thứ tư năm 2026 đã được tổ chức tối 18/12 tại Cung Văn hóa Lao động Hữu Nghị Việt – Xô (Hà Nội).",
+    thumbnail: "https://picsum.photos/seed/kulb1/640/400",
+    category: "Ký ức làm báo",
+    categorySlug: "ky-uc-lam-bao",
+    articleType: "Báo chí",
+    publishedAt: "2026-01-25T18:00:00",
+    author: "Phóng viên VOV",
+    tags: ["giải báo chí", "VOV", "diên hồng", "quốc hội"],
+    content: mockContent,
+  },
+  {
+    id: "kulb2",
+    slug: "ky-niem-dac-biet-cua-vi-tuong-phi-cong-voi-dai-tuong-vo-nguyen-giap",
+    title: "Kỷ niệm đặc biệt của vị tướng phi công với Đại tướng Võ Nguyên Giáp",
+    excerpt:
+      "VOVVN - Việc hai cha con cùng là phi công đối với Thượng tướng Võ Văn Tuấn là sự tiếp nối, kế tục đất tự hào. Niềm tự hào ấy được nhân lên nhiều lần khi hai cha con cùng có vinh dự phục vụ trong 'chuyến đi cuối cùng' của Đại tướng Võ Nguyên Giáp.",
+    thumbnail: "https://picsum.photos/seed/kulb2/300/240",
+    category: "Ký ức làm báo",
+    categorySlug: "ky-uc-lam-bao",
+    articleType: "Lịch sử",
+    publishedAt: "2026-01-25T14:44:00",
+    author: "Thanh Hà",
+    tags: ["võ nguyên giáp", "phi công", "lịch sử", "quân đội"],
+    content: mockContent,
+  },
+  {
+    id: "kulb3",
+    slug: "don-tet-o-truong-sa",
+    title: "Đón Tết ở Trường Sa",
+    excerpt:
+      "VOVVN - Tiếng chuông chùa, mùi khói hương, sự háo hức vui tươi của trẻ thơ khi diện bộ quần áo mới cho thật chỉnh tề để được mừng tuổi đầu năm càng làm cho không khí Tết ở Trường Sa thêm ấm áp.",
+    thumbnail: "https://picsum.photos/seed/kulb3/300/240",
+    category: "Ký ức làm báo",
+    categorySlug: "ky-uc-lam-bao",
+    articleType: "Phóng sự",
+    publishedAt: "2026-01-24T09:00:00",
+    author: "Minh Khoa",
+    tags: ["trường sa", "tết", "hải quân", "biển đảo"],
+    content: mockContent,
+  },
+  {
+    id: "kulb4",
+    slug: "khi-quan-chuc-mua-danh-ba-van-ban-danh-ba-dong",
+    title: 'Khi quan chức "Mua danh ba vạn, bán danh ba đồng"',
+    excerpt:
+      "VOVVN - Khi thực thi công vụ, có những cán bộ hay 'liên mắt làm quan cách mạng' đã vội vàng, rồi lúc hầu tòa thì tìm đủ mọi lý do biện minh cho việc làm sai trái. Trước ánh sáng công lý, không ai có thể che giấu được thật giả vàng thau.",
+    thumbnail: "https://picsum.photos/seed/kulb4/580/340",
+    category: "Ký ức làm báo",
+    categorySlug: "ky-uc-lam-bao",
+    articleType: "Điều tra",
+    publishedAt: "2026-01-24T07:30:00",
+    author: "Đình Tuấn",
+    tags: ["tham nhũng", "điều tra", "công vụ", "pháp luật"],
+    content: mockContent,
+  },
+  {
+    id: "kulb5",
+    slug: "cay-nuoc-biet-nghe-loi-va-loi-tam-biet-binh-20-lit",
+    title: "Cây nước biết nghe lời và lời tạm biệt bình 20 lít",
+    excerpt:
+      "VOVVN - Khách vừa bước vào nhà, bạn đang ngồi trên sofa. Thay vì dùng dây đi bẩm nút đun nước như bao lần, bạn chỉ cần nói 'Xin chào FujiHOME, bật chế độ pha trà' - và máy tự làm phần còn lại. Nhưng đó mới chỉ là khởi đầu của câu chuyện.",
+    thumbnail: "https://picsum.photos/seed/kulb5/580/340",
+    category: "Ký ức làm báo",
+    categorySlug: "ky-uc-lam-bao",
+    articleType: "Công nghệ",
+    publishedAt: "2026-01-23T16:00:00",
+    author: "Lan Anh",
+    tags: ["smarthome", "công nghệ", "đời sống", "AI"],
+    content: mockContent,
+  },
+  {
+    id: "kulb6",
+    slug: "danh-tinh-dien-vien-moi-nhat-thu-vai-james-bond-gay-bat-ngo",
+    title: "Danh tính diễn viên mới nhất thử vai James Bond gây bất ngờ",
+    excerpt:
+      "VOVVN - Tom Francis, nam diễn viên người Anh nổi lên từ vở nhạc kịch 'Sunset Boulevard', được cho là đã tham gia thử vai cho nhân vật James Bond tiếp theo. Thông tin được Variety đăng tải, dẫn lời một nguồn tin thân cận với quá trình tuyển chọn diễn viên cho vai 007.",
+    thumbnail: "https://picsum.photos/seed/kulb6/600/400",
+    category: "Ký ức làm báo",
+    categorySlug: "ky-uc-lam-bao",
+    articleType: "Giải trí",
+    publishedAt: "2026-01-22T20:00:00",
+    author: "Thu Hương",
+    tags: ["james bond", "điện ảnh", "hollywood", "giải trí"],
+    content: mockContent,
+  },
+  {
+    id: "kulb7",
+    slug: "khong-the-lien-lac-scarlett-johansson-dung-luc-phim-moi-gay-sot-o-cannes",
+    title: "Không thể liên lạc Scarlett Johansson đúng lúc phim mới gây sốt ở Cannes",
+    excerpt:
+      "VOVVN - Đạo diễn James Gray gây chú ý khi gọi FaceTime cho Scarlett Johansson ngay tại buổi ra mắt phim 'Paper Tiger' ở Liên hoan phim Cannes nhưng nữ diễn viên không nghe máy vì bận quay phim mới. Trong khi đó, tác phẩm vẫn nhận tràng pháo tay kéo dài 7 phút từ khán giả.",
+    thumbnail: "https://picsum.photos/seed/kulb7/580/360",
+    category: "Ký ức làm báo",
+    categorySlug: "ky-uc-lam-bao",
+    articleType: "Giải trí",
+    publishedAt: "2026-01-22T15:30:00",
+    author: "Thu Hương",
+    tags: ["cannes", "scarlett johansson", "điện ảnh quốc tế"],
+    content: mockContent,
+  },
+  {
+    id: "kulb8",
+    slug: "lieu-han-so-hee-ryu-jun-yeol-co-tai-hop-o-cannes",
+    title: "Liệu Han So Hee - Ryu Jun Yeol có tái hợp ở Cannes?",
+    excerpt:
+      "VOVVN - Sự xuất hiện của Han So Hee tại Liên hoan phim Cannes 2026 đang khiến mạng xã hội Hàn Quốc dậy sóng, không chỉ vì nhan sắc hay phong cách thời trang, mà còn bởi một cái tên bất ngờ bị réo gọi: Ryu Jun Yeol.",
+    thumbnail: "https://picsum.photos/seed/kulb8/580/360",
+    category: "Ký ức làm báo",
+    categorySlug: "ky-uc-lam-bao",
+    articleType: "Giải trí",
+    publishedAt: "2026-01-21T11:00:00",
+    author: "Minh Anh",
+    tags: ["han so hee", "kpop", "cannes", "hàn quốc"],
+    content: mockContent,
+  },
+  {
+    id: "kulb9",
+    slug: "miu-le-bi-khoi-to-cong-ty-quan-ly-cam-ket-khong-bao-che",
+    title: 'Miu Lê bị khởi tố, công ty quản lý cam kết "không bao che" và xin lỗi khán giả',
+    excerpt:
+      "VOVVN - Ca sĩ Miu Lê bị khởi tố, bắt tạm giam về hành vi 'Tổ chức sử dụng trái phép chất ma túy'. Sau diễn biến mới của vụ án, công ty quản lý cho biết sẽ tiếp tục phối hợp với cơ quan chức năng, đồng thời gửi lời xin lỗi tới khán giả và đối tác bị ảnh hưởng.",
+    thumbnail: "https://picsum.photos/seed/kulb9/580/360",
+    category: "Ký ức làm báo",
+    categorySlug: "ky-uc-lam-bao",
+    articleType: "Pháp luật",
+    publishedAt: "2026-01-20T08:00:00",
+    author: "Hồng Nhung",
+    tags: ["miu lê", "nghệ sĩ", "pháp luật", "ma túy"],
+    content: mockContent,
   },
 ];
 
 // =========== ĐẤT NƯỚC VÀO XUÂN ===========
-// Layout: 1 large left + 2 stacked right (different from others)
 export const datNuocVaoXuanArticles: Article[] = [
   {
     id: "dnvx1",
@@ -90,45 +250,53 @@ export const datNuocVaoXuanArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/dnvx1/640/400",
     category: "Đất nước vào Xuân",
     categorySlug: "dat-nuoc-vao-xuan",
-    publishedAt: "2026-01-25",
+    articleType: "Văn hoá",
+    publishedAt: "2026-01-25T07:00:00",
+    tags: ["lễ hội", "hà nội", "vật dân tộc"],
+    content: mockContent,
   },
   {
     id: "dnvx2",
     slug: "hue-to-chuc-le-hoi-den-huyen-tran-tuong-nho-nguoi-mo-coi",
     title: "Huế tổ chức lễ hội đến Huyền Trân, tưởng nhớ người mở cõi",
-    excerpt:
-      "VOVVN - Ngày 29/2, Sở Văn hóa và Thể thao tỉnh Huế tổ chức lễ hội đến Huyền Trân tại Trung tâm Văn hóa Huyền Trân ở núi Ngũ Phong, phường An Cựu với chủ đề 'Người vượng tiền nhân - Đầu thắng mở cõi'. Lễ hội đến ra trong không khí trang nghiêm, thành kính, thu hút đông đảo người dân và du khách.",
+    excerpt: "VOVVN - Ngày 29/2, Sở Văn hóa và Thể thao tỉnh Huế tổ chức lễ hội đến Huyền Trân tại Trung tâm Văn hóa Huyền Trân ở núi Ngũ Phong.",
     thumbnail: "https://picsum.photos/seed/dnvx2/300/200",
     category: "Đất nước vào Xuân",
     categorySlug: "dat-nuoc-vao-xuan",
-    publishedAt: "2026-01-24",
+    articleType: "Văn hoá",
+    publishedAt: "2026-01-24T08:00:00",
+    tags: ["huế", "lễ hội", "lịch sử"],
+    content: mockContent,
   },
   {
     id: "dnvx3",
     slug: "bun-tranh-vo-ngua-tai-le-hoi-truyen-thong-dua-ngua",
     title: "Bùn trắng võ ngựa tại Lễ hội truyền thống đua ngựa Gò Thì Thùng xuân Bình Ngọ",
-    excerpt:
-      "VOVVN - Đã từ ngàn xưa tới nay, ngày mồng 9 tháng Giêng hàng năm, là di tích lịch sử - văn hóa quốc gia đèo Gò Thì Thùng trung tâm là nơi đua ngựa truyền thống. Đây là lễ hội đông đảo người dân, đây đủ tính chất của khu vực miền Trung - Tây Nguyên, Hội đua ngựa càng ngày càng ý nghĩa hơn với người dân và đã diễn ra rồng nét Bình Ngọ.",
+    excerpt: "VOVVN - Đã từ ngàn xưa tới nay, ngày mồng 9 tháng Giêng hàng năm tại di tích lịch sử - văn hóa quốc gia đèo Gò Thì Thùng là nơi đua ngựa truyền thống.",
     thumbnail: "https://picsum.photos/seed/dnvx3/300/200",
     category: "Đất nước vào Xuân",
     categorySlug: "dat-nuoc-vao-xuan",
-    publishedAt: "2026-01-23",
+    articleType: "Thể thao",
+    publishedAt: "2026-01-23T09:00:00",
+    tags: ["đua ngựa", "lễ hội", "bình định"],
+    content: mockContent,
   },
   {
     id: "dnvx4",
     slug: "trai-nghiem-le-hoi-xuong-dong-cao-lan-sac-xuan-lang-ha-noi",
     title: "Trải nghiệm lễ hội Xuống Đồng của người Cao Lan trong sắc xuân giữa lòng Hà Nội",
-    excerpt:
-      "VOVVN - Không khổ sở khi 'Sắc Xuân trên mọi miền Tổ quốc 2026', đồng báo Cao Lan (Phú Thọ) đã tái hiện lễ hội Xuống Đồng tại Làng Văn hóa - Du lịch các dân tộc Việt Nam (Làng Văn hóa), xã Đoài Phương, TP Hà Nội.",
+    excerpt: "VOVVN - Đồng bào Cao Lan (Phú Thọ) đã tái hiện lễ hội Xuống Đồng tại Làng Văn hóa - Du lịch các dân tộc Việt Nam.",
     thumbnail: "https://picsum.photos/seed/dnvx4/640/400",
     category: "Đất nước vào Xuân",
     categorySlug: "dat-nuoc-vao-xuan",
-    publishedAt: "2026-01-22",
+    articleType: "Văn hoá",
+    publishedAt: "2026-01-22T10:00:00",
+    tags: ["dân tộc", "lễ hội", "hà nội", "cao lan"],
+    content: mockContent,
   },
 ];
 
 // =========== BÊN CHÉN TRÀ XUÂN ===========
-// Layout: row1 = 2 articles (left large + right with text), row2 = 2 articles (image + text only)
 export const benChenTraXuanArticles: Article[] = [
   {
     id: "bctx1",
@@ -139,18 +307,24 @@ export const benChenTraXuanArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/bctx1/560/320",
     category: "Bên chén trà Xuân",
     categorySlug: "ben-chen-tra-xuan",
-    publishedAt: "2026-01-25",
+    articleType: "Văn hoá",
+    publishedAt: "2026-01-25T06:30:00",
+    tags: ["cổ loa", "lễ hội", "hà nội"],
+    content: mockContent,
   },
   {
     id: "bctx2",
     slug: "xuan-van-qua-day",
     title: "Xuân vẫn qua đây",
     excerpt:
-      "VOVVN - Mùa xuân đi qua những cửa thư của Trần Thẳng mang những cảm xúc, đồi đắng, phố, của đất và làng in, của khoảnh khắc và sự sinh sôi và chín màn, của nhân duyên và cổ vị thương. 'Xuân vẫn qua đây' mang đến cho người đọc cảm xúc xuân sâu lắng và nhiều suy ngẫm.",
+      "VOVVN - Mùa xuân đi qua những cửa thư của Trần Thẳng mang những cảm xúc, đồi đắng, phố, của đất và làng in. 'Xuân vẫn qua đây' mang đến cho người đọc cảm xúc xuân sâu lắng và nhiều suy ngẫm.",
     thumbnail: "https://picsum.photos/seed/bctx2/560/320",
     category: "Bên chén trà Xuân",
     categorySlug: "ben-chen-tra-xuan",
-    publishedAt: "2026-01-24",
+    articleType: "Văn học",
+    publishedAt: "2026-01-24T09:00:00",
+    tags: ["thơ", "xuân", "văn học"],
+    content: mockContent,
   },
   {
     id: "bctx3",
@@ -159,7 +333,10 @@ export const benChenTraXuanArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/bctx3/200/180",
     category: "Bên chén trà Xuân",
     categorySlug: "ben-chen-tra-xuan",
-    publishedAt: "2026-01-23",
+    articleType: "Nghệ thuật",
+    publishedAt: "2026-01-23T10:00:00",
+    tags: ["nghệ thuật", "hội họa", "cảm xúc"],
+    content: mockContent,
   },
   {
     id: "bctx4",
@@ -168,12 +345,14 @@ export const benChenTraXuanArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/bctx4/200/180",
     category: "Bên chén trà Xuân",
     categorySlug: "ben-chen-tra-xuan",
-    publishedAt: "2026-01-22",
+    articleType: "Văn học",
+    publishedAt: "2026-01-22T11:00:00",
+    tags: ["thơ", "mai", "mùa xuân"],
+    content: mockContent,
   },
 ];
 
 // =========== SẮC MÀU GIẢI TRÍ ===========
-// Layout: row1 = 1 large left (portrait) + 2 on right stacked, row2 = 4 equal cards
 export const sacMauGiaiTriArticles: Article[] = [
   {
     id: "smgt1",
@@ -182,7 +361,10 @@ export const sacMauGiaiTriArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/smgt1/400/500",
     category: "Sắc màu giải trí",
     categorySlug: "sac-mau-giai-tri",
-    publishedAt: "2026-01-25",
+    articleType: "Điện ảnh",
+    publishedAt: "2026-01-25T12:00:00",
+    tags: ["điện ảnh", "anh tú", "phim tết"],
+    content: mockContent,
   },
   {
     id: "smgt2",
@@ -191,7 +373,10 @@ export const sacMauGiaiTriArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/smgt2/300/200",
     category: "Sắc màu giải trí",
     categorySlug: "sac-mau-giai-tri",
-    publishedAt: "2026-01-24",
+    articleType: "Văn hoá",
+    publishedAt: "2026-01-24T08:00:00",
+    tags: ["gò đống đa", "lễ hội", "hà nội"],
+    content: mockContent,
   },
   {
     id: "smgt3",
@@ -200,7 +385,10 @@ export const sacMauGiaiTriArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/smgt3/300/200",
     category: "Sắc màu giải trí",
     categorySlug: "sac-mau-giai-tri",
-    publishedAt: "2026-01-24",
+    articleType: "Điện ảnh",
+    publishedAt: "2026-01-24T13:00:00",
+    tags: ["phim tết", "thố ơi", "diễn viên"],
+    content: mockContent,
   },
   {
     id: "smgt4",
@@ -209,7 +397,10 @@ export const sacMauGiaiTriArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/smgt4/300/200",
     category: "Sắc màu giải trí",
     categorySlug: "sac-mau-giai-tri",
-    publishedAt: "2026-01-23",
+    articleType: "Dân tộc",
+    publishedAt: "2026-01-23T07:00:00",
+    tags: ["dao đỏ", "thêu thùa", "dân tộc"],
+    content: mockContent,
   },
   {
     id: "smgt5",
@@ -218,7 +409,10 @@ export const sacMauGiaiTriArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/smgt5/300/200",
     category: "Sắc màu giải trí",
     categorySlug: "sac-mau-giai-tri",
-    publishedAt: "2026-01-23",
+    articleType: "Điện ảnh",
+    publishedAt: "2026-01-23T14:00:00",
+    tags: ["xuân hinh", "mùi phố", "diễn viên"],
+    content: mockContent,
   },
   {
     id: "smgt6",
@@ -227,7 +421,10 @@ export const sacMauGiaiTriArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/smgt6/300/200",
     category: "Sắc màu giải trí",
     categorySlug: "sac-mau-giai-tri",
-    publishedAt: "2026-01-22",
+    articleType: "Dân tộc",
+    publishedAt: "2026-01-22T09:00:00",
+    tags: ["m'nông", "tây nguyên", "lễ hội"],
+    content: mockContent,
   },
 ];
 
@@ -237,12 +434,14 @@ export const tetMuonNoiArticles: Article[] = [
     id: "tmn1",
     slug: "don-xuan-que-huong-2026-tai-bangladesh",
     title: "Đón Xuân Quê hương 2026 tại Bangladesh",
-    excerpt:
-      "VOVVN - Ngày 6/3 tại thủ đô Dhaka, Đại sứ quán Việt Nam tại Bangladesh và Ban Liên lạc cộng đồng người Việt Nam đã tổ chức chương trình Xuân Quê hương 2026 với sự tham dự đông đảo bà con kiều bào và bạn bè Bangladesh.",
+    excerpt: "VOVVN - Ngày 6/3 tại thủ đô Dhaka, Đại sứ quán Việt Nam tại Bangladesh và Ban Liên lạc cộng đồng người Việt Nam đã tổ chức chương trình Xuân Quê hương 2026.",
     thumbnail: "https://picsum.photos/seed/tmn1/560/350",
     category: "Tết muôn nơi",
     categorySlug: "tet-muon-noi",
-    publishedAt: "2026-01-25",
+    articleType: "Kiều bào",
+    publishedAt: "2026-01-25T10:00:00",
+    tags: ["kiều bào", "bangladesh", "xuân quê hương"],
+    content: mockContent,
   },
   {
     id: "tmn2",
@@ -251,7 +450,10 @@ export const tetMuonNoiArticles: Article[] = [
     thumbnail: "",
     category: "Tết muôn nơi",
     categorySlug: "tet-muon-noi",
-    publishedAt: "2026-01-24",
+    articleType: "Dân tộc",
+    publishedAt: "2026-01-24T08:00:00",
+    tags: ["dao quần chẹt", "tết làng", "dân tộc"],
+    content: mockContent,
   },
   {
     id: "tmn3",
@@ -260,7 +462,10 @@ export const tetMuonNoiArticles: Article[] = [
     thumbnail: "",
     category: "Tết muôn nơi",
     categorySlug: "tet-muon-noi",
-    publishedAt: "2026-01-23",
+    articleType: "Văn hoá",
+    publishedAt: "2026-01-23T09:00:00",
+    tags: ["tết cổ truyền", "phố cổ", "tín ngưỡng"],
+    content: mockContent,
   },
 ];
 
@@ -270,12 +475,14 @@ export const khatVongVietArticles: Article[] = [
     id: "kvv1",
     slug: "tan-thanh-group-hanh-trinh-17-nam-dung-xay-uy-tin-kien-tao-gia-tri-ben-vung",
     title: "Tân Thành Group: Hành trình 17 năm dựng xây uy tín, kiến tạo giá trị bền vững",
-    excerpt:
-      "VOVVN - 17 năm chưa phải là chặng đường quá dài, nhưng Tân Thành Group đã chứng minh năng lực, bản lĩnh bằng sự kiến tạo những công trình trong điểm đóng không gian sống mới, đầy tinh nhân văn.",
+    excerpt: "VOVVN - 17 năm chưa phải là chặng đường quá dài, nhưng Tân Thành Group đã chứng minh năng lực, bản lĩnh bằng sự kiến tạo những công trình trong điểm đóng không gian sống mới.",
     thumbnail: "https://picsum.photos/seed/kvv1/560/350",
     category: "Khát vọng Việt",
     categorySlug: "khat-vong-viet",
-    publishedAt: "2026-01-25",
+    articleType: "Kinh tế",
+    publishedAt: "2026-01-25T08:00:00",
+    tags: ["bất động sản", "doanh nghiệp", "phát triển"],
+    content: mockContent,
   },
   {
     id: "kvv2",
@@ -284,7 +491,10 @@ export const khatVongVietArticles: Article[] = [
     thumbnail: "",
     category: "Khát vọng Việt",
     categorySlug: "khat-vong-viet",
-    publishedAt: "2026-01-24",
+    articleType: "Năng lượng",
+    publishedAt: "2026-01-24T09:00:00",
+    tags: ["năng lượng xanh", "evn", "bền vững"],
+    content: mockContent,
   },
   {
     id: "kvv3",
@@ -293,7 +503,10 @@ export const khatVongVietArticles: Article[] = [
     thumbnail: "",
     category: "Khát vọng Việt",
     categorySlug: "khat-vong-viet",
-    publishedAt: "2026-01-23",
+    articleType: "Kinh tế",
+    publishedAt: "2026-01-23T10:00:00",
+    tags: ["ford", "ô tô", "doanh số", "kỷ lục"],
+    content: mockContent,
   },
 ];
 
@@ -303,12 +516,14 @@ export const camNangTetArticles: Article[] = [
     id: "cnt1",
     slug: "ban-van-hoa-du-lich-phieng-loi-don-xuan-sang",
     title: "Bản văn hóa du lịch Phiềng Lơi đón xuân sang",
-    excerpt:
-      "VOVVN - Cách trung tâm thành phố Điện Biên Phủ chưa đầy là phường Điện Biên Phủ, tỉnh Điện Biên chừng 7km, bản văn hóa du lịch Phiềng Lơi được biết đến là điểm đến lý tưởng với du khách khi có cập đến với Điện Biên và vùng Tây Bắc.",
+    excerpt: "VOVVN - Cách trung tâm thành phố Điện Biên Phủ chừng 7km, bản văn hóa du lịch Phiềng Lơi được biết đến là điểm đến lý tưởng với du khách khi đến với Điện Biên và vùng Tây Bắc.",
     thumbnail: "https://picsum.photos/seed/cnt1/560/350",
     category: "Cẩm nang Tết",
     categorySlug: "cam-nang-tet",
-    publishedAt: "2026-01-25",
+    articleType: "Du lịch",
+    publishedAt: "2026-01-25T07:00:00",
+    tags: ["điện biên", "du lịch", "tây bắc"],
+    content: mockContent,
   },
   {
     id: "cnt2",
@@ -317,7 +532,10 @@ export const camNangTetArticles: Article[] = [
     thumbnail: "",
     category: "Cẩm nang Tết",
     categorySlug: "cam-nang-tet",
-    publishedAt: "2026-01-24",
+    articleType: "Sức khỏe",
+    publishedAt: "2026-01-24T08:00:00",
+    tags: ["sức khỏe", "dinh dưỡng", "tết"],
+    content: mockContent,
   },
   {
     id: "cnt3",
@@ -326,12 +544,14 @@ export const camNangTetArticles: Article[] = [
     thumbnail: "",
     category: "Cẩm nang Tết",
     categorySlug: "cam-nang-tet",
-    publishedAt: "2026-01-23",
+    articleType: "Sức khỏe",
+    publishedAt: "2026-01-23T09:00:00",
+    tags: ["sức khỏe", "y tế", "ung thư"],
+    content: mockContent,
   },
 ];
 
 // =========== TẾT AROUND TOWN ===========
-// Layout: row1 = 3 small cards, row2 = 1 large + text articles
 export const tetAroundTownArticles: Article[] = [
   {
     id: "tat1",
@@ -340,7 +560,10 @@ export const tetAroundTownArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/tat1/200/160",
     category: "Tết Around Town",
     categorySlug: "tet-around-town",
-    publishedAt: "2026-01-25",
+    articleType: "Culture",
+    publishedAt: "2026-01-25T08:00:00",
+    tags: ["pagoda", "hanoi", "full moon festival"],
+    content: mockContent,
   },
   {
     id: "tat2",
@@ -349,7 +572,10 @@ export const tetAroundTownArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/tat2/200/160",
     category: "Tết Around Town",
     categorySlug: "tet-around-town",
-    publishedAt: "2026-01-25",
+    articleType: "Culture",
+    publishedAt: "2026-01-25T09:00:00",
+    tags: ["lunar new year", "tradition", "vietnam"],
+    content: mockContent,
   },
   {
     id: "tat3",
@@ -358,7 +584,10 @@ export const tetAroundTownArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/tat3/200/160",
     category: "Tết Around Town",
     categorySlug: "tet-around-town",
-    publishedAt: "2026-01-24",
+    articleType: "Travel",
+    publishedAt: "2026-01-24T10:00:00",
+    tags: ["vieng market", "spring fair", "nam ha"],
+    content: mockContent,
   },
   {
     id: "tat4",
@@ -369,7 +598,10 @@ export const tetAroundTownArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/tat4/500/340",
     category: "Tết Around Town",
     categorySlug: "tet-around-town",
-    publishedAt: "2026-01-24",
+    articleType: "Travel",
+    publishedAt: "2026-01-24T14:00:00",
+    tags: ["ho chi minh city", "tourism", "tet"],
+    content: mockContent,
   },
   {
     id: "tat5",
@@ -379,12 +611,14 @@ export const tetAroundTownArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/tat5/300/220",
     category: "Tết Around Town",
     categorySlug: "tet-around-town",
-    publishedAt: "2026-01-23",
+    articleType: "Culture",
+    publishedAt: "2026-01-23T11:00:00",
+    tags: ["ao dai", "traditional", "fashion"],
+    content: mockContent,
   },
 ];
 
 // =========== CHÚC XUÂN ===========
-// Layout: completely different - mosaic/collage style with varied card sizes
 export const chucXuanArticles: Article[] = [
   {
     id: "cx1",
@@ -393,7 +627,10 @@ export const chucXuanArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/cx1/300/200",
     category: "Chúc Xuân",
     categorySlug: "chuc-xuan",
-    publishedAt: "2026-01-25",
+    articleType: "Giải trí",
+    publishedAt: "2026-01-25T06:00:00",
+    tags: ["chúc tết", "nghệ sĩ", "xuân 2026"],
+    content: mockContent,
   },
   {
     id: "cx2",
@@ -402,7 +639,10 @@ export const chucXuanArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/cx2/300/200",
     category: "Chúc Xuân",
     categorySlug: "chuc-xuan",
-    publishedAt: "2026-01-25",
+    articleType: "Thể thao",
+    publishedAt: "2026-01-25T07:00:00",
+    tags: ["thể thao", "vận động viên", "chúc tết"],
+    content: mockContent,
   },
   {
     id: "cx3",
@@ -411,7 +651,10 @@ export const chucXuanArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/cx3/640/360",
     category: "Chúc Xuân",
     categorySlug: "chuc-xuan",
-    publishedAt: "2026-01-24",
+    articleType: "Giải trí",
+    publishedAt: "2026-01-24T08:00:00",
+    tags: ["chúc xuân", "nghệ sĩ", "vov"],
+    content: mockContent,
   },
   {
     id: "cx4",
@@ -420,7 +663,10 @@ export const chucXuanArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/cx4/300/200",
     category: "Chúc Xuân",
     categorySlug: "chuc-xuan",
-    publishedAt: "2026-01-24",
+    articleType: "Đời sống",
+    publishedAt: "2026-01-24T10:00:00",
+    tags: ["lời chúc", "tết 2026", "bình ngọ"],
+    content: mockContent,
   },
   {
     id: "cx5",
@@ -429,6 +675,9 @@ export const chucXuanArticles: Article[] = [
     thumbnail: "https://picsum.photos/seed/cx5/300/200",
     category: "Chúc Xuân",
     categorySlug: "chuc-xuan",
-    publishedAt: "2026-01-23",
+    articleType: "Chính trị",
+    publishedAt: "2026-01-23T20:00:00",
+    tags: ["chủ tịch nước", "chúc tết", "giao thừa"],
+    content: mockContent,
   },
 ];

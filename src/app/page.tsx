@@ -19,7 +19,7 @@ export default function HomePage() {
   const chucXuanArticles = articleService.getChucXuan();
 
   return (
-    <div className="max-w-[1080px] mx-auto px-4 py-6">
+    <div className="max-w-[1200px] mx-auto px-4 py-6">
       {/* Hero grid */}
       <HeroSection articles={heroArticles} />
 

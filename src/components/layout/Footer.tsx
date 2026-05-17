@@ -13,7 +13,7 @@ export default function Footer() {
         <Image src="/right-footer.87f46fe3.svg" alt="" fill className="object-contain object-right-bottom" />
       </div>
 
-      <div className="relative z-10 max-w-[1080px] mx-auto px-4 py-8">
+      <div className="relative z-10 max-w-[1200px] mx-auto px-4 py-8">
         {/* Footer nav */}
         <nav className="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-6">
           {navItems.map((item) => (
