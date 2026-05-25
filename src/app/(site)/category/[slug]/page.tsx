@@ -56,7 +56,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         <section className="mb-8">
           {/* Mobile: stack. Desktop: 2-col grid */}
           <div
-            className="flex flex-col md:grid md:gap-px md:rounded-sm md:overflow-hidden"
+            className="flex flex-col md:grid gap-2 md:rounded-sm md:overflow-hidden"
             style={{ gridTemplateColumns: "1.55fr 1fr", gridTemplateRows: "1fr 1fr", background: "rgba(255,255,255,0.06)" }}
           >
             {/* Main hero — spans 2 rows on desktop */}

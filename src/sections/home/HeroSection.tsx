@@ -12,7 +12,7 @@ export default function HeroSection({ articles }: HeroSectionProps) {
   return (
     <section className="w-full rounded-sm overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.06)" }}>
       {/* Mobile: vertical stack. Desktop: 3-col grid */}
-      <div className="hidden md:grid grid-rows-2 gap-px" style={{ gridTemplateColumns: "1fr 1.8fr 1fr", background: "rgba(255,255,255,0.06)" }}>
+      <div className="hidden md:grid grid-rows-2 gap-2" style={{ gridTemplateColumns: "1fr 1.8fr 1fr", background: "rgba(255,255,255,0.06)" }}>
         {/* Top-left */}
         {topLeft && (
           <Link href={`/article/${topLeft.slug}`} className="group relative overflow-hidden" style={{ background: "var(--color-bg)" }}>
@@ -31,7 +31,7 @@ export default function HeroSection({ articles }: HeroSectionProps) {
 
         {/* Center - spans 2 rows */}
         {center && (
-          <Link href={`/article/${center.slug}`} className="group relative overflow-hidden row-span-2" style={{ background: "var(--color-bg)" }}>
+          <Link href={`/article/${center.slug}`} className="group relative overflow-hidden row-span-2 " style={{ background: "var(--color-bg)" }}>
             <div className="relative h-full min-h-[320px]">
               <Image src={center.thumbnail} alt={center.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
               <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.85) 100%)" }} />
@@ -96,10 +96,10 @@ export default function HeroSection({ articles }: HeroSectionProps) {
       </div>
 
       {/* Mobile layout: center article large, rest 2-col grid below */}
-      <div className="md:hidden flex flex-col gap-px" style={{ background: "rgba(255,255,255,0.06)" }}>
+      <div className="md:hidden flex flex-col gap-2" style={{ background: "rgba(255,255,255,0.06)" }}>
         {/* Center = hero */}
         {center && (
-          <Link href={`/article/${center.slug}`} className="group relative block overflow-hidden" style={{ background: "var(--color-bg)" }}>
+          <Link href={`/article/${center.slug}`} className="group relative block overflow-hidden " style={{ background: "var(--color-bg)" }}>
             <div className="relative" style={{ height: 220 }}>
               <Image src={center.thumbnail} alt={center.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
               <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.87) 100%)" }} />
@@ -115,7 +115,7 @@ export default function HeroSection({ articles }: HeroSectionProps) {
         )}
 
         {/* Other 4 articles in 2×2 grid */}
-        <div className="grid grid-cols-2 gap-px" style={{ background: "rgba(255,255,255,0.06)" }}>
+        <div className="grid grid-cols-2 gap-2" style={{ background: "rgba(255,255,255,0.06)" }}>
           {[topLeft, topRight, bottomLeft, bottomRight].filter(Boolean).map((article) => (
             <Link key={article!.id} href={`/article/${article!.slug}`} className="group relative overflow-hidden" style={{ background: "var(--color-bg)" }}>
               <div className="relative h-[120px]">
