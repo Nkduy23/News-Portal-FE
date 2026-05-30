@@ -1,5 +1,5 @@
-import { articleService } from "@/services/article.service";
-import { categories } from "@/data/mock-data";
+import { api } from "@/services/api";
+import { getAdminToken } from "@/lib/admin-auth";
 import ArticleListClient from "@/components/admin/ArticleListClient";
 
 interface Props {
@@ -8,8 +8,12 @@ interface Props {
 
 export default async function ArticlesPage({ searchParams }: Props) {
   const { category } = await searchParams;
-  const articles = articleService.getAll();
+
+  const token = (await getAdminToken()) ?? "";
+
+  const [articlesRes, categories] = await Promise.all([api.articles.list({ category, limit: 100 }), api.categories.list()]);
+
   const activeCat = category ? categories.find((c) => c.slug === category) : null;
 
-  return <ArticleListClient articles={articles} categories={categories} activeCategorySlug={category} activeCategoryName={activeCat?.name} />;
+  return <ArticleListClient articles={articlesRes.data} categories={categories} activeCategorySlug={category} activeCategoryName={activeCat?.nameVi} token={token} />;
 }

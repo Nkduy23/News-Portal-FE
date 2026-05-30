@@ -1,23 +1,22 @@
-import { articleService } from "@/services/article.service";
-import { categories } from "@/data/mock-data";
+import { api } from "@/services/api";
+import { getAdminToken } from "@/lib/admin-auth";
 import DashboardClient from "@/components/admin/DashboardClient";
 
-export default function DashboardPage() {
-  const articles = articleService.getAll();
+export const dynamic = "force-dynamic";
 
-  const stats = {
-    total: articles.length,
-    published: articles.filter((a) => a.status === "published").length,
-    draft: articles.filter((a) => a.status === "draft").length,
-    featured: articles.filter((a) => a.isFeatured).length,
-  };
+export default async function DashboardPage() {
+  const token = (await getAdminToken()) ?? "";
+
+  const [stats, articlesRes, categories] = await Promise.all([api.articles.stats(token), api.articles.list({ limit: 100 }), api.categories.list()]);
+
+  const articles = articlesRes.data;
 
   const categoryStats = categories.map((c) => ({
     ...c,
     count: articles.filter((a) => a.categorySlug === c.slug).length,
   }));
 
-  const recent = [...articles].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()).slice(0, 8);
+  const recent = [...articles].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()).slice(0, 20); // lấy nhiều hơn để filter range ngày ở client còn data
 
   return <DashboardClient stats={stats} categoryStats={categoryStats} recentArticles={recent} allArticles={articles} />;
 }

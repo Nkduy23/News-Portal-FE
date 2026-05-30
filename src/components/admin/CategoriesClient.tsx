@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Category } from "@/types/category";
 import { Plus, Edit2, Trash2, X, Check } from "lucide-react";
 import Link from "next/link";
+import { api } from "@/services/api";
 
 type CategoryWithCount = Category & { count: number };
 
@@ -11,7 +12,7 @@ const COLOR_PRESETS = ["#E8435A", "#F97316", "#10B981", "#8B5CF6", "#EC4899", "#
 
 interface ModalProps {
   cat?: CategoryWithCount;
-  onSave: (data: Omit<Category, "id">) => void;
+  onSave: (data: Omit<Category, "id">) => Promise<void>;
   onClose: () => void;
 }
 
@@ -22,6 +23,8 @@ function CategoryModal({ cat, onSave, onClose }: ModalProps) {
     slug: cat?.slug ?? "",
     color: cat?.color ?? COLOR_PRESETS[0],
   });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const slugify = (s: string) =>
     s
@@ -33,17 +36,23 @@ function CategoryModal({ cat, onSave, onClose }: ModalProps) {
       .trim()
       .replace(/\s+/g, "-");
 
+  const handleSubmit = async () => {
+    if (!form.nameVi.trim() || !form.slug.trim()) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await onSave({ name: form.nameVi, nameVi: form.nameVi, slug: form.slug, color: form.color });
+      onClose();
+    } catch (e: any) {
+      setError(e?.message ?? "Có lỗi xảy ra.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 100,
-        background: "rgba(0,0,0,0.6)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
+      style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center" }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -71,22 +80,30 @@ function CategoryModal({ cat, onSave, onClose }: ModalProps) {
           </button>
         </div>
 
+        {error && (
+          <div
+            style={{ background: "var(--admin-red-dim)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "var(--admin-red)", marginBottom: 14 }}
+          >
+            {error}
+          </div>
+        )}
+
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          {/* Name (Tiếng Việt) */}
+          {/* Name */}
           <div>
             <label className="admin-label">Tên chuyên mục (Tiếng Việt)</label>
             <input
               className="admin-input"
               value={form.nameVi}
               placeholder="Đất nước vào Xuân"
-              onChange={(e) => {
+              onChange={(e) =>
                 setForm((f) => ({
                   ...f,
                   nameVi: e.target.value,
                   name: e.target.value,
                   slug: cat ? f.slug : slugify(e.target.value),
-                }));
-              }}
+                }))
+              }
             />
           </div>
 
@@ -121,38 +138,19 @@ function CategoryModal({ cat, onSave, onClose }: ModalProps) {
                 />
               ))}
             </div>
-            {/* Custom color */}
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <input
                 type="color"
                 value={form.color}
                 onChange={(e) => setForm((f) => ({ ...f, color: e.target.value }))}
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 8,
-                  border: "1px solid var(--admin-border)",
-                  background: "none",
-                  cursor: "pointer",
-                  padding: 2,
-                }}
+                style={{ width: 36, height: 36, borderRadius: 8, border: "1px solid var(--admin-border)", background: "none", cursor: "pointer", padding: 2 }}
               />
               <input className="admin-input" value={form.color} onChange={(e) => setForm((f) => ({ ...f, color: e.target.value }))} style={{ flex: 1 }} placeholder="#E8435A" />
             </div>
           </div>
 
           {/* Preview */}
-          <div
-            style={{
-              padding: "10px 14px",
-              borderRadius: 8,
-              background: `${form.color}15`,
-              border: `1px solid ${form.color}40`,
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-            }}
-          >
+          <div style={{ padding: "10px 14px", borderRadius: 8, background: `${form.color}15`, border: `1px solid ${form.color}40`, display: "flex", alignItems: "center", gap: 10 }}>
             <span style={{ width: 10, height: 10, borderRadius: "50%", background: form.color, flexShrink: 0 }} />
             <span style={{ fontSize: 13, fontWeight: 600, color: "var(--admin-text)" }}>{form.nameVi || "Tên chuyên mục"}</span>
           </div>
@@ -163,16 +161,9 @@ function CategoryModal({ cat, onSave, onClose }: ModalProps) {
           <button className="admin-btn-ghost" onClick={onClose}>
             Huỷ
           </button>
-          <button
-            className="admin-btn-primary"
-            onClick={() => {
-              if (!form.nameVi.trim() || !form.slug.trim()) return;
-              onSave({ name: form.nameVi, nameVi: form.nameVi, slug: form.slug, color: form.color });
-              onClose();
-            }}
-          >
+          <button className="admin-btn-primary" onClick={handleSubmit} disabled={saving} style={{ opacity: saving ? 0.75 : 1 }}>
             <Check size={14} />
-            {cat ? "Lưu" : "Tạo chuyên mục"}
+            {saving ? "Đang lưu..." : cat ? "Lưu" : "Tạo chuyên mục"}
           </button>
         </div>
       </div>
@@ -182,33 +173,38 @@ function CategoryModal({ cat, onSave, onClose }: ModalProps) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default function CategoriesClient({ initialCategories }: { initialCategories: CategoryWithCount[] }) {
+export default function CategoriesClient({ initialCategories, token }: { initialCategories: CategoryWithCount[]; token: string }) {
   const [cats, setCats] = useState(initialCategories);
   const [modal, setModal] = useState<"create" | CategoryWithCount | null>(null);
-  const [deleting, setDel] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
-  const handleSave = (data: Omit<Category, "id">, editCat?: CategoryWithCount) => {
+  const handleSave = async (data: Omit<Category, "id">, editCat?: CategoryWithCount) => {
     if (editCat) {
-      setCats((prev) => prev.map((c) => (c.id === editCat.id ? { ...c, ...data } : c)));
+      const updated = await api.categories.update(editCat.id, data, token);
+      setCats((prev) => prev.map((c) => (c.id === editCat.id ? { ...c, ...updated } : c)));
     } else {
-      const newCat: CategoryWithCount = {
-        id: `cat-${Date.now()}`,
-        count: 0,
-        ...data,
-      };
-      setCats((prev) => [...prev, newCat]);
+      const created = await api.categories.create(data, token);
+      setCats((prev) => [...prev, { ...created, count: 0 }]);
     }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     const cat = cats.find((c) => c.id === id);
     if (!cat) return;
     if (cat.count > 0) {
-      alert(`Chuyên mục "${cat.name}" còn ${cat.count} bài viết. Hãy chuyển bài trước khi xoá.`);
+      alert(`Chuyên mục "${cat.nameVi}" còn ${cat.count} bài viết. Hãy chuyển bài trước khi xoá.`);
       return;
     }
-    if (confirm(`Xoá chuyên mục "${cat.name}"?`)) {
+    if (!confirm(`Xoá chuyên mục "${cat.nameVi}"?`)) return;
+
+    setDeleting(id);
+    try {
+      await api.categories.remove(id, token);
       setCats((prev) => prev.filter((c) => c.id !== id));
+    } catch (e: any) {
+      alert(e?.message ?? "Xoá thất bại.");
+    } finally {
+      setDeleting(null);
     }
   };
 
@@ -227,44 +223,23 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
       </div>
 
       {/* Grid */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-          gap: 14,
-        }}
-      >
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 14 }}>
         {cats.map((cat) => (
           <div
             key={cat.id}
             className="admin-card"
-            style={{
-              borderLeft: `3px solid ${cat.color}`,
-              padding: "16px 18px",
-              position: "relative",
-            }}
+            style={{ borderLeft: `3px solid ${cat.color}`, padding: "16px 18px", position: "relative", opacity: deleting === cat.id ? 0.5 : 1, transition: "opacity 0.2s" }}
           >
-            {/* Count badge */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
               <span style={{ width: 10, height: 10, borderRadius: "50%", background: cat.color }} />
               <span style={{ fontSize: 22, fontWeight: 700, color: cat.color, lineHeight: 1 }}>{cat.count}</span>
             </div>
 
-            <div style={{ fontSize: 14, fontWeight: 600, color: "var(--admin-text)", lineHeight: 1.3, marginBottom: 4 }}>{cat.name}</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "var(--admin-text)", lineHeight: 1.3, marginBottom: 4 }}>{cat.nameVi}</div>
             <div style={{ fontSize: 11, color: "var(--admin-text-muted)", marginBottom: 14 }}>/category/{cat.slug}</div>
 
-            {/* Actions */}
             <div style={{ display: "flex", gap: 6 }}>
-              <Link
-                href={`/admin/articles?category=${cat.slug}`}
-                style={{
-                  fontSize: 11,
-                  color: cat.color,
-                  textDecoration: "none",
-                  flexShrink: 0,
-                  padding: "4px 0",
-                }}
-              >
+              <Link href={`/admin/articles?category=${cat.slug}`} style={{ fontSize: 11, color: cat.color, textDecoration: "none", flexShrink: 0, padding: "4px 0" }}>
                 Xem bài →
               </Link>
               <div style={{ flex: 1 }} />
@@ -288,6 +263,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
               </button>
               <button
                 onClick={() => handleDelete(cat.id)}
+                disabled={deleting === cat.id}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -297,7 +273,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
                   borderRadius: 6,
                   border: "none",
                   background: "transparent",
-                  cursor: "pointer",
+                  cursor: cat.count > 0 ? "not-allowed" : "pointer",
                   color: cat.count > 0 ? "var(--admin-text-muted)" : "var(--admin-red)",
                 }}
                 title={cat.count > 0 ? "Còn bài viết, không thể xoá" : "Xoá"}

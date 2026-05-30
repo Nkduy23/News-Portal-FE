@@ -5,24 +5,26 @@ import Link from "next/link";
 import { Article } from "@/types/article";
 import { Category } from "@/types/category";
 import { Search, Plus, Edit2, Trash2, Star } from "lucide-react";
+import { api } from "@/services/api";
 
 interface Props {
   articles: Article[];
   categories: Category[];
   activeCategorySlug?: string;
   activeCategoryName?: string;
+  token: string;
 }
 
-export default function ArticleListClient({ articles, categories, activeCategorySlug, activeCategoryName }: Props) {
+export default function ArticleListClient({ articles, categories, activeCategorySlug, activeCategoryName, token }: Props) {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | "published" | "draft">("all");
   const [catFilter, setCat] = useState(activeCategorySlug ?? "all");
+  const [deleted, setDeleted] = useState<Set<string>>(new Set());
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => {
     setCat(activeCategorySlug ?? "all");
   }, [activeCategorySlug]);
-
-  const [deleted, setDeleted] = useState<Set<string>>(new Set());
 
   const catMap = useMemo(() => Object.fromEntries(categories.map((c) => [c.slug, c])), [categories]);
 
@@ -39,22 +41,23 @@ export default function ArticleListClient({ articles, categories, activeCategory
     [articles, deleted, catFilter, status, search],
   );
 
-  const handleDelete = (id: string) => {
-    if (confirm("Xoá bài viết này?")) setDeleted((s) => new Set([...s, id]));
+  const handleDelete = async (id: string) => {
+    if (!confirm("Xoá bài viết này?")) return;
+    setDeleting(id);
+    try {
+      await api.articles.remove(id, token);
+      setDeleted((s) => new Set([...s, id]));
+    } catch {
+      alert("Xoá thất bại, vui lòng thử lại.");
+    } finally {
+      setDeleting(null);
+    }
   };
 
   return (
     <div>
       {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 20,
-          gap: 12,
-        }}
-      >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, gap: 12 }}>
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 700, color: "var(--admin-text)", margin: "0 0 2px" }}>{activeCategoryName ?? "Tất cả bài viết"}</h1>
           <span style={{ fontSize: 13, color: "var(--admin-text-muted)" }}>{filtered.length} bài viết</span>
@@ -67,33 +70,18 @@ export default function ArticleListClient({ articles, categories, activeCategory
 
       {/* Filters */}
       <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
-        {/* Search */}
         <div style={{ position: "relative", flex: 1, minWidth: 180 }}>
-          <Search
-            size={14}
-            style={{
-              position: "absolute",
-              left: 11,
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: "var(--admin-text-muted)",
-              pointerEvents: "none",
-            }}
-          />
+          <Search size={14} style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", color: "var(--admin-text-muted)", pointerEvents: "none" }} />
           <input className="admin-input" style={{ paddingLeft: 32 }} placeholder="Tìm theo tiêu đề, tác giả..." value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
-
-        {/* Category filter */}
         <select className="admin-input" style={{ width: "auto", minWidth: 160 }} value={catFilter} onChange={(e) => setCat(e.target.value)}>
           <option value="all">Tất cả chuyên mục</option>
           {categories.map((c) => (
             <option key={c.slug} value={c.slug}>
-              {c.name}
+              {c.nameVi ?? c.name}
             </option>
           ))}
         </select>
-
-        {/* Status filter */}
         <select className="admin-input" style={{ width: "auto" }} value={status} onChange={(e) => setStatus(e.target.value as typeof status)}>
           <option value="all">Tất cả trạng thái</option>
           <option value="published">Đã xuất bản</option>
@@ -128,12 +116,15 @@ export default function ArticleListClient({ articles, categories, activeCategory
           <tbody>
             {filtered.map((a, i) => {
               const cat = catMap[a.categorySlug];
+              const isDeleting = deleting === a.id;
               return (
                 <tr
                   key={a.id}
                   style={{
                     borderBottom: "1px solid var(--admin-border)",
                     background: i % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)",
+                    opacity: isDeleting ? 0.5 : 1,
+                    transition: "opacity 0.2s",
                   }}
                 >
                   {/* Title */}
@@ -141,18 +132,7 @@ export default function ArticleListClient({ articles, categories, activeCategory
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                       {a.thumbnail && <img src={a.thumbnail} alt="" style={{ width: 44, height: 32, borderRadius: 5, objectFit: "cover", flexShrink: 0 }} />}
                       <div style={{ minWidth: 0 }}>
-                        <div
-                          style={{
-                            fontSize: 12,
-                            fontWeight: 500,
-                            color: "var(--admin-text)",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          {a.title}
-                        </div>
+                        <div style={{ fontSize: 12, fontWeight: 500, color: "var(--admin-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.title}</div>
                         {a.isFeatured && (
                           <div style={{ display: "flex", alignItems: "center", gap: 3, marginTop: 2 }}>
                             <Star size={10} color="#3B82F6" fill="#3B82F6" />
@@ -162,28 +142,22 @@ export default function ArticleListClient({ articles, categories, activeCategory
                       </div>
                     </div>
                   </td>
-
                   {/* Category */}
                   <td style={{ padding: "10px 16px", whiteSpace: "nowrap" }}>
                     <span className="admin-badge" style={{ color: cat?.color ?? "#E8435A", background: `${cat?.color ?? "#E8435A"}22`, fontSize: 11 }}>
-                      {cat?.name ?? a.categorySlug}
+                      {cat?.nameVi ?? cat?.name ?? a.categorySlug}
                     </span>
                   </td>
-
                   {/* Type */}
                   <td style={{ padding: "10px 16px", fontSize: 12, color: "var(--admin-text-muted)", whiteSpace: "nowrap" }}>{a.articleType ?? "—"}</td>
-
                   {/* Author */}
                   <td style={{ padding: "10px 16px", fontSize: 12, color: "var(--admin-text-sub)", whiteSpace: "nowrap" }}>{a.author ?? "—"}</td>
-
                   {/* Date */}
                   <td style={{ padding: "10px 16px", fontSize: 11, color: "var(--admin-text-muted)", whiteSpace: "nowrap" }}>{new Date(a.publishedAt).toLocaleDateString("vi-VN")}</td>
-
                   {/* Status */}
                   <td style={{ padding: "10px 16px" }}>
                     <span className={`admin-badge ${a.status === "published" ? "admin-badge-green" : "admin-badge-amber"}`}>{a.status === "published" ? "Live" : "Draft"}</span>
                   </td>
-
                   {/* Actions */}
                   <td style={{ padding: "10px 16px" }}>
                     <div style={{ display: "flex", gap: 4 }}>
@@ -208,6 +182,7 @@ export default function ArticleListClient({ articles, categories, activeCategory
                       </Link>
                       <button
                         onClick={() => handleDelete(a.id)}
+                        disabled={isDeleting}
                         style={{
                           display: "flex",
                           alignItems: "center",
@@ -218,7 +193,7 @@ export default function ArticleListClient({ articles, categories, activeCategory
                           color: "var(--admin-red)",
                           background: "transparent",
                           border: "none",
-                          cursor: "pointer",
+                          cursor: isDeleting ? "not-allowed" : "pointer",
                         }}
                         title="Xoá"
                       >

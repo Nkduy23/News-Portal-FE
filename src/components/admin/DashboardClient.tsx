@@ -48,6 +48,7 @@ function StatCard({ label, value, sub, color, icon: Icon }: { label: string; val
 export default function DashboardClient({ stats, categoryStats, recentArticles, allArticles }: Props) {
   const [range, setRange] = useState<0 | 7 | 30>(7);
   const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
+  const catMap = Object.fromEntries(categoryStats.map((c) => [c.slug, c]));
 
   const filtered = useMemo(() => {
     const now = Date.now();
@@ -187,15 +188,8 @@ export default function DashboardClient({ stats, categoryStats, recentArticles, 
                     </div>
                   </td>
                   <td style={{ padding: "9px 16px", whiteSpace: "nowrap" }}>
-                    <span
-                      className="admin-badge"
-                      style={{
-                        fontSize: 10,
-                        color: "#E8435A",
-                        background: "rgba(232,67,90,0.12)",
-                      }}
-                    >
-                      {a.category}
+                    <span className="admin-badge" style={{ fontSize: 10, color: catMap[a.categorySlug]?.color ?? "#E8435A", background: `${catMap[a.categorySlug]?.color ?? "#E8435A"}22` }}>
+                      {a.categoryName ?? a.categorySlug}
                     </span>
                   </td>
                   <td style={{ padding: "9px 16px", fontSize: 11, color: "var(--admin-text-muted)", whiteSpace: "nowrap" }}>{new Date(a.publishedAt).toLocaleDateString("vi-VN")}</td>

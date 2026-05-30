@@ -1,5 +1,4 @@
-import { categories } from "@/data/mock-data";
-import { articleService } from "@/services/article.service";
+import { api } from "@/services/api";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -20,20 +19,21 @@ function formatDate(iso: string) {
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const { slug } = await params;
   const { page: pageStr } = await searchParams;
-
-  const category = categories.find((c) => c.slug === slug);
-  if (!category) return notFound();
-
-  const articles = articleService.getByCategory(slug);
-  if (articles.length === 0) return notFound();
-
   const currentPage = Math.max(1, parseInt(pageStr ?? "1"));
-  const heroArticles = articles.slice(0, 3); // always show top 3 as hero
-  const listArticles = articles.slice(3); // rest go into paginated list
-  const totalPages = Math.max(1, Math.ceil(listArticles.length / ITEMS_PER_PAGE));
-  const pagedList = listArticles.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
-  const [heroMain, heroSub1, heroSub2] = heroArticles;
+  // Lấy song song: category info + trang đầu (3 hero) + trang list
+  const [category, heroRes, listRes] = await Promise.all([
+    api.categories.getBySlug(slug).catch(() => null),
+    api.articles.list({ category: slug, status: "published", page: 1, limit: 3 }),
+    api.articles.list({ category: slug, status: "published", page: currentPage, limit: ITEMS_PER_PAGE }),
+  ]);
+
+  if (!category) return notFound();
+  if (heroRes.meta.total === 0) return notFound();
+
+  const [heroMain, heroSub1, heroSub2] = heroRes.data;
+  const pagedList = listRes.data;
+  const totalPages = Math.max(1, Math.ceil((listRes.meta.total - 3) / ITEMS_PER_PAGE));
 
   return (
     <div className="max-w-[1200px] mx-auto px-4 py-6">
@@ -54,12 +54,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       {/* ── HERO SECTION ─────────────────────────────────────────────── */}
       {heroMain && (
         <section className="mb-8">
-          {/* Mobile: stack. Desktop: 2-col grid */}
           <div
             className="flex flex-col md:grid gap-2 md:rounded-sm md:overflow-hidden"
             style={{ gridTemplateColumns: "1.55fr 1fr", gridTemplateRows: "1fr 1fr", background: "rgba(255,255,255,0.06)" }}
           >
-            {/* Main hero — spans 2 rows on desktop */}
+            {/* Main hero */}
             <Link href={`/article/${heroMain.slug}`} className="group relative block overflow-hidden md:row-span-2 mb-px md:mb-0" style={{ background: "var(--color-bg)" }}>
               <div className="relative" style={{ height: "clamp(240px, 42vw, 420px)" }}>
                 {heroMain.thumbnail && <Image src={heroMain.thumbnail} alt={heroMain.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" priority />}
@@ -136,7 +135,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                 className="group flex gap-4 p-4 transition-colors hover:bg-white/[0.04]"
                 style={{ borderBottom: i < pagedList.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none" }}
               >
-                {/* Text — left */}
+                {/* Text */}
                 <div className="flex-1 min-w-0 flex flex-col justify-between">
                   <div>
                     {article.articleType && (
@@ -166,7 +165,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                   </p>
                 </div>
 
-                {/* Thumbnail — right */}
+                {/* Thumbnail */}
                 {article.thumbnail && (
                   <div className="relative shrink-0 overflow-hidden rounded-sm" style={{ width: "clamp(100px, 22vw, 180px)", height: "clamp(70px, 15vw, 120px)" }}>
                     <Image src={article.thumbnail} alt={article.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -181,7 +180,6 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       {/* ── PAGINATION ────────────────────────────────────────────────── */}
       {totalPages > 1 && (
         <nav className="flex items-center justify-center gap-1 pb-4" aria-label="Phân trang">
-          {/* Prev */}
           {currentPage > 1 ? (
             <Link
               href={`/category/${slug}?page=${currentPage - 1}`}
@@ -196,26 +194,21 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             </span>
           )}
 
-          {/* Page numbers */}
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => {
-            const isActive = p === currentPage;
-            return (
-              <Link
-                key={p}
-                href={`/category/${slug}?page=${p}`}
-                className="flex items-center justify-center w-9 h-9 rounded-sm text-[13px] font-semibold transition-colors"
-                style={{
-                  background: isActive ? "var(--color-accent)" : "transparent",
-                  color: isActive ? "white" : "rgba(255,255,255,0.65)",
-                  border: isActive ? "none" : "1px solid rgba(255,255,255,0.12)",
-                }}
-              >
-                {p}
-              </Link>
-            );
-          })}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <Link
+              key={p}
+              href={`/category/${slug}?page=${p}`}
+              className="flex items-center justify-center w-9 h-9 rounded-sm text-[13px] font-semibold transition-colors"
+              style={{
+                background: p === currentPage ? "var(--color-accent)" : "transparent",
+                color: p === currentPage ? "white" : "rgba(255,255,255,0.65)",
+                border: p === currentPage ? "none" : "1px solid rgba(255,255,255,0.12)",
+              }}
+            >
+              {p}
+            </Link>
+          ))}
 
-          {/* Next */}
           {currentPage < totalPages ? (
             <Link
               href={`/category/${slug}?page=${currentPage + 1}`}

@@ -1,5 +1,4 @@
-import { articleService } from "@/services/article.service";
-import { categories } from "@/data/mock-data";
+import { api } from "@/services/api";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -14,7 +13,6 @@ function formatDateFull(iso: string) {
   return `${days[d.getDay()]}, ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}, ${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
 }
 
-// Social share icons as inline SVG
 function FacebookIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -40,10 +38,13 @@ function MailIcon() {
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
-  const article = articleService.getArticleBySlug(slug);
+
+  const [article, related] = await Promise.all([api.articles.getBySlug(slug).catch(() => null), api.articles.related(slug, 4).catch(() => [])]);
+
   if (!article) return notFound();
 
-  const related = articleService.getRelated(slug, article.categorySlug, 4);
+  // Lấy màu category từ danh sách categories
+  const categories = await api.categories.list().catch(() => []);
   const category = categories.find((c) => c.slug === article.categorySlug);
   const accentColor = category?.color ?? "var(--color-accent)";
 
@@ -56,7 +57,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         </Link>
         <span>/</span>
         <Link href={`/category/${article.categorySlug}`} className="hover:text-white transition-colors">
-          {article.category}
+          {article.categoryName}
         </Link>
         <span>/</span>
         <span className="line-clamp-1" style={{ color: "rgba(255,255,255,0.5)" }}>
@@ -66,15 +67,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
       {/* ── ARTICLE TYPE + DATETIME ────────────────────────────────── */}
       <div className="flex items-center justify-between mb-3 gap-3">
-        {article.articleType ? (
-          <span className="text-[11px] font-extrabold uppercase px-3 py-1.5 rounded-sm tracking-wider" style={{ background: accentColor, color: "white" }}>
-            {article.articleType}
-          </span>
-        ) : (
-          <span className="text-[11px] font-extrabold uppercase px-3 py-1.5 rounded-sm tracking-wider" style={{ background: "var(--color-accent)", color: "white" }}>
-            {article.category}
-          </span>
-        )}
+        <span className="text-[11px] font-extrabold uppercase px-3 py-1.5 rounded-sm tracking-wider" style={{ background: accentColor, color: "white" }}>
+          {article.articleType ?? article.categoryName}
+        </span>
         <p className="text-[11px] shrink-0" style={{ color: "rgba(255,255,255,0.4)" }}>
           {formatDateFull(article.publishedAt)}
         </p>
@@ -159,11 +154,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                 key={tag}
                 href={`/search?q=${encodeURIComponent(tag)}`}
                 className="text-[12px] font-semibold px-3 py-1.5 rounded-full transition-colors hover:bg-white/15"
-                style={{
-                  background: "rgba(255,255,255,0.07)",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  color: "rgba(255,255,255,0.75)",
-                }}
+                style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.75)" }}
               >
                 #{tag}
               </Link>
@@ -212,8 +203,6 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         <h2 className="text-[16px] font-extrabold uppercase mb-4" style={{ color: "rgba(255,255,255,0.85)" }}>
           Bình luận
         </h2>
-
-        {/* Comment list placeholder */}
         <div className="mb-5 space-y-4">
           <div className="flex gap-3">
             <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-[12px] font-bold text-white" style={{ background: accentColor }}>
@@ -232,18 +221,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             </div>
           </div>
         </div>
-
-        {/* Write comment form */}
         <div className="space-y-3">
           <textarea
             rows={4}
             placeholder="Viết bình luận của bạn..."
             className="w-full px-4 py-3 rounded-sm text-[13px] resize-none outline-none transition-colors"
-            style={{
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              color: "rgba(255,255,255,0.9)",
-            }}
+            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.9)" }}
           />
           <div className="flex items-center justify-between gap-3">
             <p className="text-[11px]" style={{ color: "rgba(255,255,255,0.3)" }}>

@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { Article } from "@/types/article";
 import { Category } from "@/types/category";
 import { Check, ChevronLeft, Star } from "lucide-react";
+import { api } from "@/services/api";
 
 interface Props {
   article: Article | null;
   categories: Category[];
   isNew: boolean;
+  token: string;
 }
 
 function slugify(title: string) {
@@ -23,7 +25,7 @@ function slugify(title: string) {
     .replace(/\s+/g, "-");
 }
 
-export default function ArticleFormClient({ article, categories, isNew }: Props) {
+export default function ArticleFormClient({ article, categories, isNew, token }: Props) {
   const router = useRouter();
 
   const [form, setForm] = useState<Partial<Article>>(
@@ -31,7 +33,6 @@ export default function ArticleFormClient({ article, categories, isNew }: Props)
       title: "",
       slug: "",
       categorySlug: categories[0]?.slug ?? "",
-      category: categories[0]?.name ?? "",
       articleType: "",
       author: "",
       excerpt: "",
@@ -46,6 +47,7 @@ export default function ArticleFormClient({ article, categories, isNew }: Props)
   const [tagsInput, setTagsInput] = useState((article?.tags ?? []).join(", "));
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const set = <K extends keyof Article>(k: K, v: Article[K]) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -55,35 +57,37 @@ export default function ArticleFormClient({ article, categories, isNew }: Props)
   };
 
   const handleCategoryChange = (slug: string) => {
-    const cat = categories.find((c) => c.slug === slug);
     set("categorySlug", slug);
-    set("category", cat?.name ?? slug);
   };
 
   const handleSave = async () => {
+    setError(null);
     setSaving(true);
-    // TODO: replace with real API call
-    await new Promise((r) => setTimeout(r, 600));
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => {
-      setSaved(false);
-      router.push("/admin/articles");
-    }, 800);
+
+    // Strip readonly fields trước khi gửi BE
+    const { id: _id, createdAt: _c, updatedAt: _u, categoryName: _cn, category: _cat, ...payload } = form as any;
+
+    try {
+      if (isNew) {
+        await api.articles.create(payload, token);
+      } else {
+        console.log("payload:", JSON.stringify(payload));
+
+        await api.articles.update(article!.id, payload, token);
+      }
+      setSaved(true);
+      setTimeout(() => router.push("/admin/articles"), 800);
+    } catch (e: any) {
+      setError(e?.message ?? "Có lỗi xảy ra, vui lòng thử lại.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <div>
       {/* Top bar */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 24,
-          gap: 12,
-        }}
-      >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24, gap: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <button
             onClick={() => router.back()}
@@ -115,6 +119,13 @@ export default function ArticleFormClient({ article, categories, isNew }: Props)
           </button>
         </div>
       </div>
+
+      {/* Error */}
+      {error && (
+        <div style={{ background: "var(--admin-red-dim)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "var(--admin-red)", marginBottom: 16 }}>
+          {error}
+        </div>
+      )}
 
       {/* Body */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 280px", gap: 20, alignItems: "start" }}>
@@ -159,16 +170,7 @@ export default function ArticleFormClient({ article, categories, isNew }: Props)
             <input className="admin-input" value={form.thumbnail ?? ""} placeholder="https://..." onChange={(e) => set("thumbnail", e.target.value)} />
             {form.thumbnail && (
               <div style={{ marginTop: 12 }}>
-                <img
-                  src={form.thumbnail}
-                  alt="preview"
-                  style={{
-                    height: 140,
-                    borderRadius: 8,
-                    objectFit: "cover",
-                    border: "1px solid var(--admin-border)",
-                  }}
-                />
+                <img src={form.thumbnail} alt="preview" style={{ height: 140, borderRadius: 8, objectFit: "cover", border: "1px solid var(--admin-border)" }} />
               </div>
             )}
           </div>
@@ -231,7 +233,7 @@ export default function ArticleFormClient({ article, categories, isNew }: Props)
               <select className="admin-input" value={form.categorySlug} onChange={(e) => handleCategoryChange(e.target.value)}>
                 {categories.map((c) => (
                   <option key={c.slug} value={c.slug}>
-                    {c.name}
+                    {c.nameVi}
                   </option>
                 ))}
               </select>
@@ -266,18 +268,7 @@ export default function ArticleFormClient({ article, categories, isNew }: Props)
                   position: "relative",
                 }}
               >
-                <span
-                  style={{
-                    position: "absolute",
-                    top: 3,
-                    left: form.isFeatured ? 21 : 3,
-                    width: 16,
-                    height: 16,
-                    borderRadius: "50%",
-                    background: "#fff",
-                    transition: "left 0.2s",
-                  }}
-                />
+                <span style={{ position: "absolute", top: 3, left: form.isFeatured ? 21 : 3, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
               </button>
             </div>
             {form.isFeatured && <p style={{ fontSize: 11, color: "#3B82F6", marginTop: 8 }}>✓ Bài này sẽ hiển thị trong Hero Section</p>}

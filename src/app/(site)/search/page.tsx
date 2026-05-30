@@ -4,9 +4,8 @@ import { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { searchArticles } from "@/services/article.service";
-import { Article } from "@/types/article";
-import { categories } from "@/data/mock-data";
+import { api } from "@/services/api";
+import type { Article } from "@/types/article";
 
 const PER_PAGE = 8;
 
@@ -24,10 +23,6 @@ function formatDate(iso: string) {
   return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
 }
 
-function getCategoryColor(categorySlug: string) {
-  return categories.find((c) => c.slug === categorySlug)?.color ?? "#e8435a";
-}
-
 // ── Empty state ────────────────────────────────────────────────────────────
 function EmptyState({ query }: { query: string }) {
   return (
@@ -36,7 +31,6 @@ function EmptyState({ query }: { query: string }) {
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.35-4.35" />
-          <path d="M8 11h6M11 8v6" opacity="0" />
         </svg>
       </div>
       <h3 className="text-[16px] font-bold mb-2" style={{ color: "rgba(255,255,255,0.7)" }}>
@@ -55,21 +49,23 @@ function EmptyState({ query }: { query: string }) {
 
 // ── Article row card ───────────────────────────────────────────────────────
 function ArticleRow({ article, query }: { article: Article; query: string }) {
-  const color = getCategoryColor(article.categorySlug);
-
   // Highlight matching text
   function highlight(text: string) {
-    if (!query.trim()) return text;
+    if (!query.trim()) return <>{text}</>;
     const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
     const parts = text.split(regex);
-    return parts.map((part, i) =>
-      regex.test(part) ? (
-        <mark key={i} style={{ background: "rgba(232,67,90,0.35)", color: "white", borderRadius: "2px", padding: "0 1px" }}>
-          {part}
-        </mark>
-      ) : (
-        part
-      ),
+    return (
+      <>
+        {parts.map((part, i) =>
+          regex.test(part) ? (
+            <mark key={i} style={{ background: "rgba(232,67,90,0.35)", color: "white", borderRadius: "2px", padding: "0 1px" }}>
+              {part}
+            </mark>
+          ) : (
+            part
+          ),
+        )}
+      </>
     );
   }
 
@@ -79,13 +75,12 @@ function ArticleRow({ article, query }: { article: Article; query: string }) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1.5 flex-wrap">
           {article.articleType && (
-            <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-sm" style={{ background: color, color: "white" }}>
+            <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-sm" style={{ background: "var(--color-accent)", color: "white" }}>
               {article.articleType}
             </span>
           )}
-
-          <Link href={`/category/${article.categorySlug}`} className="text-[11px] font-semibold hover:underline" style={{ color }}>
-            {article.category}
+          <Link href={`/category/${article.categorySlug}`} className="text-[11px] font-semibold hover:underline" style={{ color: "var(--color-accent)" }}>
+            {article.categoryName ?? article.category}
           </Link>
         </div>
 
@@ -103,26 +98,17 @@ function ArticleRow({ article, query }: { article: Article; query: string }) {
 
         <div className="flex items-center gap-3 mt-2">
           {article.author && (
-            <span className="text-[11px] font-semibold" style={{ color }}>
+            <span className="text-[11px] font-semibold" style={{ color: "var(--color-accent)" }}>
               {article.author}
             </span>
           )}
-
           <span className="text-[11px]" style={{ color: "rgba(255,255,255,0.3)" }}>
             {formatDate(article.publishedAt)}
           </span>
-
           {article.tags && article.tags.length > 0 && (
             <div className="hidden sm:flex gap-1.5">
               {article.tags.slice(0, 2).map((tag) => (
-                <span
-                  key={tag}
-                  className="text-[10px] px-1.5 py-0.5 rounded-full"
-                  style={{
-                    background: "rgba(255,255,255,0.07)",
-                    color: "rgba(255,255,255,0.45)",
-                  }}
-                >
+                <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.45)" }}>
                   #{tag}
                 </span>
               ))}
@@ -134,13 +120,7 @@ function ArticleRow({ article, query }: { article: Article; query: string }) {
       {/* Thumbnail */}
       {article.thumbnail && (
         <Link href={`/article/${article.slug}`}>
-          <div
-            className="relative shrink-0 overflow-hidden rounded-sm"
-            style={{
-              width: "clamp(90px, 20vw, 160px)",
-              height: "clamp(65px, 14vw, 110px)",
-            }}
-          >
+          <div className="relative shrink-0 overflow-hidden rounded-sm" style={{ width: "clamp(90px, 20vw, 160px)", height: "clamp(65px, 14vw, 110px)" }}>
             <Image src={article.thumbnail} alt={article.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
           </div>
         </Link>
@@ -162,6 +142,7 @@ function Pagination({ current, total, onChange }: { current: number; total: numb
       >
         ‹
       </button>
+
       {Array.from({ length: total }, (_, i) => i + 1).map((p) => (
         <button
           key={p}
@@ -176,6 +157,7 @@ function Pagination({ current, total, onChange }: { current: number; total: numb
           {p}
         </button>
       ))}
+
       <button
         onClick={() => onChange(current + 1)}
         disabled={current === total}
@@ -188,7 +170,7 @@ function Pagination({ current, total, onChange }: { current: number; total: numb
   );
 }
 
-// ── Main search content (needs useSearchParams → must be client) ────────────
+// ── Main search content ────────────────────────────────────────────────────
 function SearchContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -201,22 +183,33 @@ function SearchContent() {
   const [page, setPage] = useState(initialPage);
   const [results, setResults] = useState<Article[]>([]);
   const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(!!initialQ);
 
-  // Run search whenever query or page changes
+  // Gọi API khi query hoặc page thay đổi
   useEffect(() => {
     if (!query.trim()) {
       setResults([]);
       setTotal(0);
       return;
     }
-    const { articles, total } = searchArticles(query, page, PER_PAGE);
-    setResults(articles);
-    setTotal(total);
-    setHasSearched(true);
+
+    setLoading(true);
+    api.articles
+      .list({ search: query, status: "published", page, limit: PER_PAGE })
+      .then(({ data, meta }) => {
+        setResults(data);
+        setTotal(meta.total);
+        setHasSearched(true);
+      })
+      .catch(() => {
+        setResults([]);
+        setTotal(0);
+      })
+      .finally(() => setLoading(false));
   }, [query, page]);
 
-  // Keep URL in sync
+  // Sync URL
   useEffect(() => {
     if (!query.trim()) return;
     const params = new URLSearchParams();
@@ -243,7 +236,6 @@ function SearchContent() {
 
   return (
     <div className="max-w-[860px] mx-auto px-4 py-8">
-      {/* Page title */}
       <h1 className="text-[24px] sm:text-[28px] font-extrabold uppercase mb-6" style={{ color: "var(--color-accent)", fontFamily: "var(--font-display)" }}>
         Tìm kiếm
       </h1>
@@ -257,11 +249,7 @@ function SearchContent() {
           placeholder="Nhập từ khoá tìm kiếm..."
           autoFocus
           className="w-full pl-5 pr-14 py-4 rounded-sm text-[14px] outline-none transition-colors"
-          style={{
-            background: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.15)",
-            color: "white",
-          }}
+          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.15)", color: "white" }}
           onFocus={(e) => (e.currentTarget.style.borderColor = "var(--color-accent)")}
           onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)")}
         />
@@ -296,10 +284,19 @@ function SearchContent() {
         </p>
       )}
 
-      {/* Results */}
-      {hasSearched && query && total === 0 && <EmptyState query={query} />}
+      {/* Loading */}
+      {loading && (
+        <div className="space-y-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-24 rounded-sm animate-pulse" style={{ background: "rgba(255,255,255,0.05)" }} />
+          ))}
+        </div>
+      )}
 
-      {results.length > 0 && (
+      {/* Results */}
+      {!loading && hasSearched && query && total === 0 && <EmptyState query={query} />}
+
+      {!loading && results.length > 0 && (
         <>
           <div className="space-y-3">
             {results.map((article) => (
@@ -310,7 +307,7 @@ function SearchContent() {
         </>
       )}
 
-      {/* Idle state — no search yet */}
+      {/* Idle state */}
       {!hasSearched && (
         <div className="text-center py-16">
           <p className="text-[14px]" style={{ color: "rgba(255,255,255,0.3)" }}>
@@ -322,7 +319,6 @@ function SearchContent() {
   );
 }
 
-// Suspense wrapper required because useSearchParams is used inside
 export default function SearchPage() {
   return (
     <Suspense

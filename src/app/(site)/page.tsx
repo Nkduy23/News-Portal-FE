@@ -1,4 +1,4 @@
-import { articleService } from "@/services/article.service";
+import { api } from "@/services/api";
 import HeroSection from "@/sections/home/HeroSection";
 import DatNuocVaoXuanSection from "@/sections/home/DatNuocVaoXuanSection";
 import BenChenTraXuanSection from "@/sections/home/BenChenTraXuanSection";
@@ -7,47 +7,31 @@ import ThreeColSection from "@/sections/home/ThreeColSection";
 import TetAroundTownSection from "@/sections/home/TetAroundTownSection";
 import ChucXuanSection from "@/sections/home/ChucXuanSection";
 
-export default function HomePage() {
-  const heroArticles = articleService.getHeroArticles();
-  const datNuocArticles = articleService.getDatNuocVaoXuan();
-  const benChenTraArticles = articleService.getBenChenTraXuan();
-  const sacMauArticles = articleService.getSacMauGiaiTri();
-  const tetMuonNoiArticles = articleService.getTetMuonNoi();
-  const khatVongArticles = articleService.getKhatVongViet();
-  const camNangArticles = articleService.getCamNangTet();
-  const tetAroundTownArticles = articleService.getTetAroundTown();
-  const chucXuanArticles = articleService.getChucXuan();
+export default async function HomePage() {
+  const { hero, sections } = await api.home.getData();
 
   return (
     <div className="max-w-[1200px] mx-auto px-4 py-6">
-      {/* Hero grid */}
-      <HeroSection articles={heroArticles} />
+      <HeroSection articles={hero} />
 
-      {/* Đất nước vào Xuân - unique layout */}
-      <DatNuocVaoXuanSection articles={datNuocArticles} />
+      <DatNuocVaoXuanSection articles={sections.datNuocVaoXuan} />
 
-      {/* Bên chén trà Xuân */}
-      <BenChenTraXuanSection articles={benChenTraArticles} />
+      <BenChenTraXuanSection articles={sections.benChenTraXuan} />
 
-      {/* Sắc màu giải trí */}
-      <SacMauGiaiTriSection articles={sacMauArticles} />
+      <SacMauGiaiTriSection articles={sections.sacMauGiaiTri} />
 
-      {/* 3-col: Tết muôn nơi | Khát vọng Việt | Cẩm nang Tết */}
       <ThreeColSection
         sections={[
-          { title: "Tết muôn nơi", slug: "tet-muon-noi", articles: tetMuonNoiArticles },
-          { title: "Khát vọng Việt", slug: "khat-vong-viet", articles: khatVongArticles },
-          { title: "Cẩm nang Tết", slug: "cam-nang-tet", articles: camNangArticles },
+          { title: "Tết muôn nơi", slug: "tet-muon-noi", articles: sections.tetMuonNoi },
+          { title: "Khát vọng Việt", slug: "khat-vong-viet", articles: sections.khatVongViet },
+          { title: "Cẩm nang Tết", slug: "cam-nang-tet", articles: sections.camNangTet },
         ]}
       />
 
-      {/* Tết Around Town */}
-      <TetAroundTownSection articles={tetAroundTownArticles} />
+      <TetAroundTownSection articles={sections.tetAroundTown} />
 
-      {/* Chúc Xuân - mosaic layout */}
-      <ChucXuanSection articles={chucXuanArticles} />
+      <ChucXuanSection articles={sections.chucXuan} />
 
-      {/* Bottom spacer */}
       <div className="h-8" />
     </div>
   );
