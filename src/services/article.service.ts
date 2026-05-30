@@ -69,7 +69,7 @@ export function searchArticles(query: string, page = 1, perPage = 8): SearchResu
       a.title.toLowerCase().includes(q) ||
       (a.excerpt ?? "").toLowerCase().includes(q) ||
       (a.articleType ?? "").toLowerCase().includes(q) ||
-      a.category.toLowerCase().includes(q) ||
+      a.categoryName.toLowerCase().includes(q) ||
       (a.tags ?? []).some((t) => t.toLowerCase().includes(q)),
   );
 

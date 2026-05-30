@@ -7,6 +7,7 @@ export interface Article {
   content?: string;
 
   // Classification
+  category?: string;
   categoryName: string; // tên hiển thị (vd: "Bên chén trà Xuân")
   categorySlug: string; // dùng để filter/link (vd: "ben-chen-tra-xuan")
   articleType?: string;
